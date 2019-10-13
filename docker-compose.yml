@@ -51,22 +51,6 @@ services:
           aliases:
             - redis
 
-    clamd-mailcow:
-      image: mailcow/clamd:1.29
-      build: ./data/Dockerfiles/clamd
-      restart: always
-      dns:
-        - ${IPV4_NETWORK:-172.22.1}.254
-      environment:
-        - TZ=${TZ}
-        - SKIP_CLAMD=${SKIP_CLAMD:-n}
-      volumes:
-        - ./data/conf/clamav/:/etc/clamav/
-      networks:
-        mailcow-network:
-          aliases:
-            - clamd
-
     rspamd-mailcow:
       image: mailcow/rspamd:1.47
       build: ./data/Dockerfiles/rspamd
@@ -410,23 +394,6 @@ services:
           aliases:
             - dockerapi
 
-    solr-mailcow:
-      image: mailcow/solr:1.6
-      build: ./data/Dockerfiles/solr
-      restart: always
-      volumes:
-        - solr-vol-1:/opt/solr/server/solr/dovecot-fts/data
-      ports:
-        - "${SOLR_PORT:-127.0.0.1:18983}:8983"
-      environment:
-        - TZ=${TZ}
-        - SOLR_HEAP=${SOLR_HEAP:-1024}
-        - SKIP_SOLR=${SKIP_SOLR:-y}
-      networks:
-        mailcow-network:
-          aliases:
-            - solr
-
     olefy-mailcow:
       image: mailcow/olefy:1.1
       restart: always
@@ -451,7 +418,6 @@ services:
         - unbound-mailcow
         - mysql-mailcow
         - redis-mailcow
-        - clamd-mailcow
         - rspamd-mailcow
         - php-fpm-mailcow
         - sogo-mailcow
@@ -463,7 +429,6 @@ services:
         - netfilter-mailcow
         - watchdog-mailcow
         - dockerapi-mailcow
-        - solr-mailcow
       environment:
         - TZ=${TZ}
       image: robbertkl/ipv6nat
@@ -495,7 +460,6 @@ volumes:
   mysql-socket-vol-1:
   redis-vol-1:
   rspamd-vol-1:
-  solr-vol-1:
   postfix-vol-1:
   crypt-vol-1:
   sogo-web-vol-1:
